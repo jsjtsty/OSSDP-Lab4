@@ -1,25 +1,27 @@
-name: Auto Merge
-
+name: Automerge
 on:
   pull_request:
     types:
-      - closed
+      - labeled
+      - unlabeled
       - synchronize
-
+      - opened
+      - edited
+      - ready_for_review
+      - reopened
+      - unlocked
+  pull_request_review:
+    types:
+      - submitted
+  status: {}
 jobs:
-  merge:
+  automerge:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Merge PR
-        run: |
-          if [ $(git log --merges --pretty=format:'%H' -n 1) == ${{ github.event.before }} ]; then
-            git fetch origin pull/${{ github.event.number }}/merge:PR-${{ github.event.number }}
-            git merge --quiet PR-${{ github.event.number }}
-            git push origin HEAD:refs/heads/${{ github.event.pull_request.base.ref }}
-          fi
+      - name: automerge
+        uses: "pascalgn/automerge-action@629929da409181990e4e638dcf84a74e11d3af66"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          MERGE_LABELS: "automerge,!work in progress"
+          MERGE_METHOD: "squash"
+          MERGE_COMMIT_MESSAGE: "pull-request-title"
