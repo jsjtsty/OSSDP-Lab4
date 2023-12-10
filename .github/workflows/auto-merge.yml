@@ -1,0 +1,25 @@
+name: Auto Merge
+
+on:
+  pull_request:
+    types:
+      - closed
+      - synchronize
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Merge PR
+        run: |
+          if [ $(git log --merges --pretty=format:'%H' -n 1) == ${{ github.event.before }} ]; then
+            git fetch origin pull/${{ github.event.number }}/merge:PR-${{ github.event.number }}
+            git merge --quiet PR-${{ github.event.number }}
+            git push origin HEAD:refs/heads/${{ github.event.pull_request.base.ref }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
