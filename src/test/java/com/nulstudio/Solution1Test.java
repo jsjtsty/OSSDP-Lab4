@@ -133,4 +133,9 @@ public class Solution1Test {
         assertEquals("1.0(6)", solution.fractionToDecimal(16, 15));
         assertEquals("0.(0434782608695652173913)", solution.fractionToDecimal(-1, -23));
     }
+
+    @Test
+    public void failTest() {
+        assert false;
+    }
 }
